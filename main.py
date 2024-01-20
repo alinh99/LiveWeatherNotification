@@ -2,8 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 from win11toast import toast
 import time
-import datetime
-
+import schedule
 def get_data(url):
     url_request = requests.get(url)
     return url_request.text    
@@ -63,10 +62,13 @@ result = f"""Today Temperature: {weather_result["today_temp"]}
 {weather_result["feels_like"]}
 Chance of Rain: {weather_result["rain_chance"]} 
 """
-delta_hour = 0
+
+def send_notification():
+    toast("Weather", result)
+
+send_notification()
+schedule.every(1).hour.do(send_notification)
+
 while True:
-    now_hour = datetime.datetime.now().hour
-    if delta_hour != now_hour:
-        toast("Weather", result)
-    delta_hour = now_hour
-    time.sleep(60)
+  schedule.run_pending()
+  time.sleep(1)
